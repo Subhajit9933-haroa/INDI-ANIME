@@ -1,59 +1,49 @@
 import streamlit as st
 import os
+import datetime
 
-# Define upload folder
-UPLOAD_FOLDER = 'code/'
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+# Define chat storage folder
+CHAT_FOLDER = 'code/'
+os.makedirs(CHAT_FOLDER, exist_ok=True)
+CHAT_FILE = os.path.join(CHAT_FOLDER, 'chat_history.txt')
 
-# Page Configuration
-st.set_page_config(page_title="Video Streaming Platform", layout="wide")
+# User authentication
+USERNAME = "SUBHAJIT8167"
+PASSWORD = "816785"
 
-# Custom CSS
-st.markdown(
-    """
-    <style>
-    .main {
-        background-color: #f0f2f6;
-    }
-    .stTextInput, .stFileUploader, .stButton {
-        border-radius: 10px;
-    }
-    .stVideo {
-        border-radius: 10px;
-        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-    }
-    </style>
-    """,
-    unsafe_allow_html=True,
-)
+st.set_page_config(page_title="Live Group Chat", layout="wide")
 
-st.title("📺 Video Streaming Platform")
-st.markdown("### Upload and Watch Videos Seamlessly!")
+st.title("💬 Live Group Chat")
 
-# File uploader with columns
-col1, col2 = st.columns([2, 3])
+# Login system
+username_input = st.text_input("Enter Username")
+password_input = st.text_input("Enter Password", type="password")
+login_button = st.button("Login")
 
-with col1:
-    st.subheader("Upload a Video")
-    uploaded_file = st.file_uploader("Choose a video file", type=["mp4", "avi", "mov", "mkv"], key="uploader")
-    title = st.text_input("Enter Video Title", key="title")
-    if uploaded_file and title:
-        file_path = os.path.join(UPLOAD_FOLDER, uploaded_file.name)
-        with open(file_path, "wb") as f:
-            f.write(uploaded_file.read())
-        st.success(f"🎉 Uploaded: {title} ({uploaded_file.name})")
+if login_button:
+    if username_input == USERNAME and password_input == PASSWORD:
+        st.session_state["logged_in"] = True
+    else:
+        st.error("Invalid username or password")
 
-with col2:
-    st.image("https://source.unsplash.com/600x300/?video,streaming", use_column_width=True)
-
-# Display uploaded videos
-st.subheader("📹 Available Videos")
-video_list = [f for f in os.listdir(UPLOAD_FOLDER) if f.endswith((".mp4", ".avi", ".mov", ".mkv"))]
-
-if video_list:
-    for video in video_list:
-        with st.container():
-            st.markdown(f"**🎬 {video}**")
-            st.video(os.path.join(UPLOAD_FOLDER, video))
+if "logged_in" in st.session_state and st.session_state["logged_in"]:
+    st.success("✅ Logged in successfully!")
+    
+    # Chat input
+    message = st.text_area("Type your message")
+    send_button = st.button("Send")
+    
+    if send_button and message:
+        timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        with open(CHAT_FILE, "a") as f:
+            f.write(f"[{timestamp}] {USERNAME}: {message}\n")
+        st.experimental_rerun()
+    
+    # Display chat history
+    st.subheader("📜 Chat History")
+    if os.path.exists(CHAT_FILE):
+        with open(CHAT_FILE, "r") as f:
+            chat_history = f.read()
+            st.text_area("", chat_history, height=300, disabled=True)
 else:
-    st.info("No videos uploaded yet. Upload a video to start streaming!")
+    st.warning("Please log in to access the chat.")
