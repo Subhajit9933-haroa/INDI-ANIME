@@ -37,7 +37,8 @@ if "logged_in" in st.session_state and st.session_state["logged_in"]:
         timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         with open(CHAT_FILE, "a") as f:
             f.write(f"[{timestamp}] {USERNAME}: {message}\n")
-        st.experimental_rerun()
+        st.rerun()
+
     
     # Display chat history
     st.subheader("📜 Chat History")
