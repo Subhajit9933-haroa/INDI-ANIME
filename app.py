@@ -38,11 +38,11 @@ else:
     if os.path.exists(CHAT_FILE):
         with open(CHAT_FILE, "r") as f:
             chat_history = f.read()
-            # Using a text_area to display the chat history in a disabled state
+            # Display chat history in a disabled text area
             st.text_area("Chat History", chat_history, height=300, disabled=True)
 
     # Message input area (send box at the bottom)
-    message = st.text_area("Type your message", min_rows=5)
+    message = st.text_area("Type your message", min_rows=5)  # Use min_rows to control the height of the input box
     send_button = st.button("Send")
     
     if send_button and message:
