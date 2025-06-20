@@ -81,7 +81,7 @@ def persist_session():
     st.query_params["menu"] = st.session_state.menu
 
 st.set_page_config(page_title="KNOWLEDGE SHARE", layout="centered")
-st.title("Akta Twitter Clone")
+st.title("KNOWLEDGE SHARE")
 
 if not st.session_state.logged_in:
     menu = st.sidebar.selectbox("Menu", ["Login", "Signup"], index=["Login", "Signup"].index(st.session_state.menu) if st.session_state.menu in ["Login", "Signup"] else 0)
