@@ -46,12 +46,25 @@ def save_post(username, text, image_path=None):
         "username": username,
         "text": text,
         "image": image_path,
-        "time": datetime.now().isoformat()
+        "time": datetime.now().isoformat(),
+        "comments": []
     })
     save_json(POSTS_FILE, posts)
 
 def get_posts():
-    return reversed(load_json(POSTS_FILE, []))
+    return list(reversed(load_json(POSTS_FILE, [])))
+
+def add_comment(post_index, commenter, comment_text):
+    posts = load_json(POSTS_FILE, [])
+    if 0 <= post_index < len(posts):
+        if "comments" not in posts[post_index]:
+            posts[post_index]["comments"] = []
+        posts[post_index]["comments"].append({
+            "commenter": commenter,
+            "comment": comment_text,
+            "time": datetime.now().isoformat()
+        })
+        save_json(POSTS_FILE, posts)
 
 st.set_page_config(page_title="Akta Twitter Clone", layout="centered")
 st.title("Akta Twitter Clone")
@@ -102,9 +115,26 @@ else:
             st.success("Posted! Scroll down to see your post.")
         st.markdown("---")
         st.markdown("### Timeline")
-        for post in get_posts():
+        posts = get_posts()
+        for idx, post in enumerate(posts):
             st.write(f"**{post['username']}** at {post['time'][:19]}")
             st.write(post["text"])
             if post["image"]:
                 st.image(post["image"], width=300)
+            # Show comments
+            st.markdown("**Comments:**")
+            comments = post.get("comments", [])
+            if comments:
+                for c in comments:
+                    st.write(f"- {c['commenter']} ({c['time'][:19]}): {c['comment']}")
+            else:
+                st.write("_No comments yet._")
+            # Add comment form
+            with st.form(f"comment_form_{idx}"):
+                comment_text = st.text_input("Add a comment:", key=f"comment_{idx}")
+                submit_comment = st.form_submit_button("Comment")
+                if submit_comment and comment_text.strip():
+                    # posts is reversed, so original index is len(posts)-1-idx
+                    add_comment(len(posts)-1-idx, st.session_state.username, comment_text.strip())
+                    st.success("Comment added! Please scroll or refresh to see it.")
             st.markdown("---")
