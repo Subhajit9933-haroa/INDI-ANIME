@@ -61,9 +61,8 @@ if "logged_in" not in st.session_state:
 if "username" not in st.session_state:
     st.session_state.username = ""
 
-menu = st.sidebar.selectbox("Menu", ["Login", "Signup"] if not st.session_state.logged_in else ["Timeline", "Logout"])
-
 if not st.session_state.logged_in:
+    menu = st.sidebar.selectbox("Menu", ["Login", "Signup"])
     if menu == "Signup":
         st.subheader("Sign Up")
         su_user = st.text_input("Username", key="su_user")
@@ -79,16 +78,15 @@ if not st.session_state.logged_in:
             if login(li_user, li_pass):
                 st.session_state.logged_in = True
                 st.session_state.username = li_user
-                st.success("Logged in!")
-                st.experimental_rerun()
+                st.success("Logged in! Please select 'Timeline' from the sidebar.")
             else:
                 st.error("Invalid credentials.")
 else:
+    menu = st.sidebar.selectbox("Menu", ["Timeline", "Logout"])
     if menu == "Logout":
         st.session_state.logged_in = False
         st.session_state.username = ""
-        st.success("Logged out!")
-        st.experimental_rerun()
+        st.success("Logged out! Please select 'Login' from the sidebar.")
     elif menu == "Timeline":
         st.subheader(f"Welcome, {st.session_state.username}!")
         st.markdown("### Create a Post")
@@ -101,7 +99,7 @@ else:
                 with open(img_path, "wb") as f:
                     f.write(post_image.read())
             save_post(st.session_state.username, post_text, img_path)
-            st.success("Posted!")
+            st.success("Posted! Scroll down to see your post.")
         st.markdown("---")
         st.markdown("### Timeline")
         for post in get_posts():
