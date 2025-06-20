@@ -137,7 +137,7 @@ for t in reversed(tweets):
     if t.get('photo'):
         img_path = os.path.join(UPLOAD_FOLDER, t['photo'])
         if os.path.exists(img_path):
-            st.image(img_path, use_column_width=True)
+            st.image(img_path, use_container_width=True)
     st.markdown("<b>Comments:</b>", unsafe_allow_html=True)
     if t.get('comments'):
         for c in t['comments']:
