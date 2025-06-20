@@ -67,7 +67,7 @@ def add_comment(post_index, commenter, comment_text):
         save_json(POSTS_FILE, posts)
 
 # --- Session Persistence using URL Query Params ---
-query_params = st.experimental_get_query_params()
+query_params = st.query_params
 if "logged_in" not in st.session_state:
     st.session_state.logged_in = query_params.get("logged_in", ["False"])[0] == "True"
 if "username" not in st.session_state:
