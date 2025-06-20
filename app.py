@@ -59,6 +59,13 @@ def save_image(uploaded_file, username, tweet_count):
         os.remove(filepath)
         return None
 
+def rerun():
+    # Compatible rerun for all Streamlit versions
+    if hasattr(st, "experimental_rerun"):
+        st.experimental_rerun()
+    else:
+        st.rerun()
+
 # Session state for login
 if 'username' not in st.session_state:
     st.session_state['username'] = None
@@ -74,7 +81,7 @@ if st.session_state['username']:
     st.sidebar.success(f"Logged in as @{st.session_state['username']}")
     if st.sidebar.button("Logout"):
         st.session_state['username'] = None
-        st.experimental_rerun()
+        rerun()
 else:
     tab1, tab2 = st.sidebar.tabs(["Login", "Register"])
     with tab1:
@@ -84,7 +91,7 @@ else:
             if login_user in users and users[login_user] == login_pass:
                 st.session_state['username'] = login_user
                 st.success("Login successful!")
-                st.experimental_rerun()
+                rerun()
             else:
                 st.error("Invalid credentials")
     with tab2:
@@ -99,7 +106,7 @@ else:
                 save_user(reg_user, reg_pass)
                 st.session_state['username'] = reg_user
                 st.success("Registration successful!")
-                st.experimental_rerun()
+                rerun()
 
 # Main: Post form
 tweets = load_tweets()
@@ -121,7 +128,7 @@ if st.session_state['username']:
                 'comments': []
             })
             save_tweets(tweets)
-            st.experimental_rerun()
+            rerun()
 
 st.markdown("## Timeline")
 for t in reversed(tweets):
@@ -149,5 +156,5 @@ for t in reversed(tweets):
                             tw['comments'] = []
                         tw['comments'].append({'user': st.session_state['username'], 'text': comment_text})
                         save_tweets(tweets)
-                        st.experimental_rerun()
+                        rerun()
     st.markdown("</div>", unsafe_allow_html=True)
