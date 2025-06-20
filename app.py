@@ -66,13 +66,21 @@ def add_comment(post_index, commenter, comment_text):
         })
         save_json(POSTS_FILE, posts)
 
+# --- Session Persistence using URL Query Params ---
+query_params = st.experimental_get_query_params()
+if "logged_in" not in st.session_state:
+    st.session_state.logged_in = query_params.get("logged_in", ["False"])[0] == "True"
+if "username" not in st.session_state:
+    st.session_state.username = query_params.get("username", [""])[0]
+
+def persist_session():
+    st.experimental_set_query_params(
+        logged_in=str(st.session_state.logged_in),
+        username=st.session_state.username
+    )
+
 st.set_page_config(page_title="Akta Twitter Clone", layout="centered")
 st.title("Akta Twitter Clone")
-
-if "logged_in" not in st.session_state:
-    st.session_state.logged_in = False
-if "username" not in st.session_state:
-    st.session_state.username = ""
 
 if not st.session_state.logged_in:
     menu = st.sidebar.selectbox("Menu", ["Login", "Signup"])
@@ -91,6 +99,7 @@ if not st.session_state.logged_in:
             if login(li_user, li_pass):
                 st.session_state.logged_in = True
                 st.session_state.username = li_user
+                persist_session()
                 st.success("Logged in! Please select an option from the sidebar.")
             else:
                 st.error("Invalid credentials.")
@@ -99,6 +108,7 @@ else:
     if menu == "Logout":
         st.session_state.logged_in = False
         st.session_state.username = ""
+        persist_session()
         st.success("Logged out! Please select 'Login' from the sidebar.")
     elif menu == "Create a Post":
         st.subheader("Create a Post")
@@ -138,3 +148,4 @@ else:
                     add_comment(len(posts)-1-idx, st.session_state.username, comment_text.strip())
                     st.success("Comment added! Please scroll or refresh to see it.")
             st.markdown("---")
+    persist_session()
