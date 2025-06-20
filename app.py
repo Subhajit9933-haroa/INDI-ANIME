@@ -105,7 +105,6 @@ if not st.session_state.logged_in:
                 st.session_state.menu = "Timeline"
                 persist_session()
                 st.success("Logged in! Please select an option from the sidebar.")
-                st.experimental_rerun()
             else:
                 st.error("Invalid credentials.")
 else:
@@ -119,7 +118,6 @@ else:
         st.session_state.menu = "Login"
         persist_session()
         st.success("Logged out! Please select 'Login' from the sidebar.")
-        st.experimental_rerun()
     elif menu == "Create a Post":
         st.subheader("Create a Post")
         post_text = st.text_area("What's happening?")
