@@ -74,10 +74,8 @@ if "username" not in st.session_state:
     st.session_state.username = query_params.get("username", [""])[0]
 
 def persist_session():
-    st.experimental_set_query_params(
-        logged_in=str(st.session_state.logged_in),
-        username=st.session_state.username
-    )
+    st.query_params["logged_in"] = str(st.session_state.logged_in)
+    st.query_params["username"] = st.session_state.username
 
 st.set_page_config(page_title="Akta Twitter Clone", layout="centered")
 st.title("Akta Twitter Clone")
