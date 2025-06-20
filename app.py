@@ -91,18 +91,17 @@ if not st.session_state.logged_in:
             if login(li_user, li_pass):
                 st.session_state.logged_in = True
                 st.session_state.username = li_user
-                st.success("Logged in! Please select 'Timeline' from the sidebar.")
+                st.success("Logged in! Please select an option from the sidebar.")
             else:
                 st.error("Invalid credentials.")
 else:
-    menu = st.sidebar.selectbox("Menu", ["Timeline", "Logout"])
+    menu = st.sidebar.selectbox("Menu", ["Timeline", "Create a Post", "Logout"])
     if menu == "Logout":
         st.session_state.logged_in = False
         st.session_state.username = ""
         st.success("Logged out! Please select 'Login' from the sidebar.")
-    elif menu == "Timeline":
-        st.subheader(f"Welcome, {st.session_state.username}!")
-        st.markdown("### Create a Post")
+    elif menu == "Create a Post":
+        st.subheader("Create a Post")
         post_text = st.text_area("What's happening?")
         post_image = st.file_uploader("Upload a photo", type=["jpg", "jpeg", "png"])
         if st.button("Post"):
@@ -112,8 +111,9 @@ else:
                 with open(img_path, "wb") as f:
                     f.write(post_image.read())
             save_post(st.session_state.username, post_text, img_path)
-            st.success("Posted! Scroll down to see your post.")
-        st.markdown("---")
+            st.success("Posted! Go to Timeline to see your post.")
+    elif menu == "Timeline":
+        st.subheader(f"Welcome, {st.session_state.username}!")
         st.markdown("### Timeline")
         posts = get_posts()
         for idx, post in enumerate(posts):
