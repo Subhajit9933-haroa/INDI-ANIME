@@ -80,7 +80,7 @@ def persist_session():
     st.query_params["username"] = st.session_state.username
     st.query_params["menu"] = st.session_state.menu
 
-st.set_page_config(page_title="Akta Twitter Clone", layout="centered")
+st.set_page_config(page_title="KNOWLEDGE SHARE", layout="centered")
 st.title("Akta Twitter Clone")
 
 if not st.session_state.logged_in:
