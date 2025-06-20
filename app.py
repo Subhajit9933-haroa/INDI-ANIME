@@ -66,22 +66,27 @@ def add_comment(post_index, commenter, comment_text):
         })
         save_json(POSTS_FILE, posts)
 
-# --- Session Persistence using URL Query Params ---
+# --- Restore session state from URL query params ---
 query_params = st.query_params
 if "logged_in" not in st.session_state:
     st.session_state.logged_in = query_params.get("logged_in", ["False"])[0] == "True"
 if "username" not in st.session_state:
     st.session_state.username = query_params.get("username", [""])[0]
+if "menu" not in st.session_state:
+    st.session_state.menu = query_params.get("menu", ["Timeline"])[0] if st.session_state.logged_in else "Login"
 
 def persist_session():
     st.query_params["logged_in"] = str(st.session_state.logged_in)
     st.query_params["username"] = st.session_state.username
+    st.query_params["menu"] = st.session_state.menu
 
 st.set_page_config(page_title="Akta Twitter Clone", layout="centered")
 st.title("Akta Twitter Clone")
 
 if not st.session_state.logged_in:
-    menu = st.sidebar.selectbox("Menu", ["Login", "Signup"])
+    menu = st.sidebar.selectbox("Menu", ["Login", "Signup"], index=["Login", "Signup"].index(st.session_state.menu) if st.session_state.menu in ["Login", "Signup"] else 0)
+    st.session_state.menu = menu
+    persist_session()
     if menu == "Signup":
         st.subheader("Sign Up")
         su_user = st.text_input("Username", key="su_user")
@@ -97,17 +102,24 @@ if not st.session_state.logged_in:
             if login(li_user, li_pass):
                 st.session_state.logged_in = True
                 st.session_state.username = li_user
+                st.session_state.menu = "Timeline"
                 persist_session()
                 st.success("Logged in! Please select an option from the sidebar.")
+                st.experimental_rerun()
             else:
                 st.error("Invalid credentials.")
 else:
-    menu = st.sidebar.selectbox("Menu", ["Timeline", "Create a Post", "Logout"])
+    menu_options = ["Timeline", "Create a Post", "Logout"]
+    menu = st.sidebar.selectbox("Menu", menu_options, index=menu_options.index(st.session_state.menu) if st.session_state.menu in menu_options else 0)
+    st.session_state.menu = menu
+    persist_session()
     if menu == "Logout":
         st.session_state.logged_in = False
         st.session_state.username = ""
+        st.session_state.menu = "Login"
         persist_session()
         st.success("Logged out! Please select 'Login' from the sidebar.")
+        st.experimental_rerun()
     elif menu == "Create a Post":
         st.subheader("Create a Post")
         post_text = st.text_area("What's happening?")
