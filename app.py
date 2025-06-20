@@ -66,16 +66,6 @@ def add_comment(post_index, commenter, comment_text):
         })
         save_json(POSTS_FILE, posts)
 
-def delete_post(post_index):
-    posts = load_json(POSTS_FILE, [])
-    if 0 <= post_index < len(posts):
-        # Remove image file if exists
-        img_path = posts[post_index].get("image")
-        if img_path and os.path.exists(img_path):
-            os.remove(img_path)
-        posts.pop(post_index)
-        save_json(POSTS_FILE, posts)
-
 # --- Restore session state from URL query params ---
 query_params = st.query_params
 if "logged_in" not in st.session_state:
@@ -164,11 +154,4 @@ else:
                 if submit_comment and comment_text.strip():
                     add_comment(len(posts)-1-idx, st.session_state.username, comment_text.strip())
                     st.success("Comment added! Please scroll or refresh to see it.")
-            # Delete post button (only for post owner)
-            if post["username"] == st.session_state.username:
-                if st.button("Delete Post", key=f"delete_{idx}"):
-                    delete_post(len(posts)-1-idx)
-                    st.success("Post deleted!")
-                    st.experimental_rerun()
-            st.markdown("---")
-    persist_session()
+        persist_session()
